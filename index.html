@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reel Portfolio</title>
+
+  <style>
+    body {
+      margin: 0;
+      background: black;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .reel-container {
+      position: relative;
+      width: 100%;
+      max-width: 420px;
+      height: 100vh;
+      aspect-ratio: 9 / 16;
+      overflow: hidden;
+      background: black;
+    }
+
+    .slide {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+    }
+
+    .text-box {
+      width: 100%;
+      padding: 20px;
+      box-sizing: border-box;
+      background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+      color: white;
+      font-size: 18px;
+      line-height: 1.5;
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="reel-container">
+    <div class="slide" id="slide">
+      <div class="text-box" id="textBox">
+        आपका लेख यहाँ दिखाई देगा...
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
