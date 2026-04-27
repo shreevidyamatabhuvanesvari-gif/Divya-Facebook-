@@ -18,20 +18,6 @@ body {
   padding:10px;
 }
 
-input, textarea {
-  width:100%;
-  margin:10px 0;
-  padding:10px;
-  font-size:16px;
-}
-
-button {
-  width:100%;
-  padding:12px;
-  font-size:16px;
-  cursor:pointer;
-}
-
 .preview {
   position:relative;
   width:100%;
@@ -44,7 +30,6 @@ button {
   width:100%;
   height:100%;
   object-fit:cover;
-  display:none;
 }
 
 .text-box {
@@ -56,6 +41,13 @@ button {
   color:white;
   text-align:center;
 }
+
+input, textarea, button {
+  width:100%;
+  margin:8px 0;
+  padding:10px;
+  font-size:16px;
+}
 </style>
 </head>
 
@@ -63,13 +55,13 @@ button {
 
 <div class="container">
 
-<input type="file" id="imageInput" accept="image/*">
-<textarea id="textInput" placeholder="यहाँ अपना लेख लिखें..."></textarea>
-<button id="previewBtn">Preview बनाएं</button>
+<input type="file" id="fileInput" accept="image/*">
+<textarea id="textInput" placeholder="यहाँ लेख लिखें"></textarea>
+<button id="btn">Preview बनाएं</button>
 
 <div class="preview">
-  <img id="previewImage">
-  <div class="text-box" id="previewText"></div>
+  <img id="img" src="">
+  <div class="text-box" id="textBox"></div>
 </div>
 
 </div>
