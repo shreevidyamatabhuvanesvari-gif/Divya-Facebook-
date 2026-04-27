@@ -49,17 +49,26 @@ input, textarea {
 /* TEXT BOX */
 .text-box {
   position: absolute;
-  bottom: 130px; /* 🔥 पहले 0 था, अब थोड़ा ऊपर */
-  width: 100%;
+
+  /* 🔥 CENTER FIX */
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  width: 90%;
   padding: 20px;
-  background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+
+  /* 🔥 Background थोड़ा soft किया */
+  background: rgba(0,0,0,0.6);
+
   color: white;
   text-align: center;
-  font-size: 20px;
-  line-height: 1.6;
+  font-size: 22px;
+  line-height: 1.7;
 
   white-space: normal;
   word-break: break-word;
+  border-radius: 12px;
 }
 
 /* PLAY BUTTON */
