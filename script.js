@@ -3,7 +3,6 @@ const textInput = document.getElementById("textInput");
 const img = document.getElementById("img");
 const textBox = document.getElementById("textBox");
 const playBtn = document.getElementById("playBtn");
-const container = document.querySelector(".container");
 
 // ===== IMAGE LOAD =====
 fileInput.addEventListener("change", function () {
@@ -15,11 +14,27 @@ fileInput.addEventListener("change", function () {
   img.style.display = "block";
 });
 
-// ===== MULTILINE TEXT =====
-let lines = [];
-let currentLine = 0;
+// ===== TEXT SPLIT FUNCTION (IMPORTANT FIX) =====
+function splitLines(text) {
+  return text
+    .split(/\n|[।.!?]/) // 🔥 newline + punctuation
+    .map(l => l.trim())
+    .filter(l => l.length > 0);
+}
 
-// ===== PLAY BUTTON =====
+// ===== FULLSCREEN FIX =====
+function openFullscreen() {
+  const el = document.documentElement;
+
+  if (el.requestFullscreen) el.requestFullscreen();
+  else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+  else if (el.msRequestFullscreen) el.msRequestFullscreen();
+}
+
+// ===== MAIN FLOW =====
+let lines = [];
+let index = 0;
+
 playBtn.addEventListener("click", function () {
 
   const text = textInput.value.trim();
@@ -28,69 +43,54 @@ playBtn.addEventListener("click", function () {
     return;
   }
 
-  // 🔥 Hide input UI
+  // 🔥 Hide inputs
   fileInput.style.display = "none";
   textInput.style.display = "none";
   playBtn.style.display = "none";
 
-  // 🔥 Fullscreen
-  document.documentElement.requestFullscreen?.();
+  // 🔥 Fullscreen (user gesture के अंदर)
+  openFullscreen();
 
-  // Split text into lines (by punctuation)
-  lines = text.split(/[।.!?]/).filter(l => l.trim() !== "");
-  currentLine = 0;
+  lines = splitLines(text);
+  index = 0;
 
-  speakLine();
+  speakNext();
 });
 
 // ===== SPEAK LINE BY LINE =====
-function speakLine() {
+function speakNext() {
 
-  if (currentLine >= lines.length) return;
+  if (index >= lines.length) return;
 
-  const line = lines[currentLine].trim();
+  const line = lines[index];
 
-  // show only one line
+  // 👉 सिर्फ एक लाइन दिखेगी
   textBox.innerText = line;
 
-  // animate image
-  applyImageEffect();
+  // 👉 image effect
+  img.style.transform = "scale(1)";
+  setTimeout(() => {
+    img.style.transition = "transform 5s linear";
+    img.style.transform = "scale(1.08)";
+  }, 50);
 
   speechSynthesis.cancel();
 
   const speech = new SpeechSynthesisUtterance(line);
 
-  // 🎤 BEST FEMALE VOICE DETECTION
+  // 🎤 Hindi voice
   const voices = speechSynthesis.getVoices();
-  const femaleVoice = voices.find(v =>
-    v.lang.includes("hi") && v.name.toLowerCase().includes("female")
-  ) || voices.find(v => v.lang.includes("hi"));
-
-  if (femaleVoice) speech.voice = femaleVoice;
+  const v = voices.find(v => v.lang.includes("hi")) || voices[0];
+  if (v) speech.voice = v;
 
   speech.lang = "hi-IN";
   speech.rate = 0.95;
   speech.pitch = 1.1;
 
   speech.onend = () => {
-    currentLine++;
-    setTimeout(speakLine, 600);
+    index++;
+    setTimeout(speakNext, 700);
   };
 
   speechSynthesis.speak(speech);
-}
-
-// ===== IMAGE EFFECT =====
-function applyImageEffect() {
-
-  const effects = [
-    "scale(1.05)",
-    "scale(1.1)",
-    "scale(1.08)"
-  ];
-
-  const random = effects[Math.floor(Math.random() * effects.length)];
-
-  img.style.transition = "transform 5s ease";
-  img.style.transform = random;
 }
