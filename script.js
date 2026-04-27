@@ -1,31 +1,24 @@
 const fileInput = document.getElementById("fileInput");
 const textInput = document.getElementById("textInput");
-const btn = document.getElementById("btn");
 
 const img = document.getElementById("img");
 const textBox = document.getElementById("textBox");
 
-btn.onclick = function () {
+// 🔥 IMAGE LOAD ON SELECT (NO BUTTON)
+fileInput.addEventListener("change", function () {
 
   const file = fileInput.files[0];
-  const text = textInput.value;
 
-  if (!file) {
-    alert("पहले फोटो चुनें");
-    return;
-  }
+  if (!file) return;
 
-  // ===== IMAGE LOAD (WORKING) =====
   const url = URL.createObjectURL(file);
+
   img.src = url;
+  img.style.display = "block"; // 🔥 important
 
-  // ===== TEXT SHOW =====
-  textBox.innerText = text;
+});
 
-  // ===== VOICE (USER CLICK REQUIRED) =====
-  const speech = new SpeechSynthesisUtterance(text);
-  speech.lang = "hi-IN";
-
-  speechSynthesis.cancel();
-  speechSynthesis.speak(speech);
-};
+// 🔥 TEXT LIVE UPDATE
+textInput.addEventListener("input", function () {
+  textBox.innerText = textInput.value;
+});
