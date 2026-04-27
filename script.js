@@ -14,21 +14,33 @@ fileInput.addEventListener("change", function () {
   img.style.display = "block";
 });
 
-// ===== TEXT SPLIT FUNCTION (IMPORTANT FIX) =====
+// ===== TEXT SPLIT =====
 function splitLines(text) {
   return text
-    .split(/\n|[।.!?]/) // 🔥 newline + punctuation
+    .split(/\n|[।.!?]/)
     .map(l => l.trim())
     .filter(l => l.length > 0);
 }
 
-// ===== FULLSCREEN FIX =====
+// ===== FULLSCREEN =====
 function openFullscreen() {
-  const el = document.documentElement;
+  const el = document.querySelector(".preview"); // 🔥 important
 
   if (el.requestFullscreen) el.requestFullscreen();
   else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
   else if (el.msRequestFullscreen) el.msRequestFullscreen();
+}
+
+// ===== IMAGE EFFECT =====
+function applyEffect() {
+  img.style.transition = "transform 6s linear";
+  img.style.transform = "scale(1.08)";
+}
+
+// ===== RESET EFFECT =====
+function resetEffect() {
+  img.style.transition = "none";
+  img.style.transform = "scale(1)";
 }
 
 // ===== MAIN FLOW =====
@@ -43,12 +55,11 @@ playBtn.addEventListener("click", function () {
     return;
   }
 
-  // 🔥 Hide inputs
+  // UI hide
   fileInput.style.display = "none";
   textInput.style.display = "none";
   playBtn.style.display = "none";
 
-  // 🔥 Fullscreen (user gesture के अंदर)
   openFullscreen();
 
   lines = splitLines(text);
@@ -57,40 +68,48 @@ playBtn.addEventListener("click", function () {
   speakNext();
 });
 
-// ===== SPEAK LINE BY LINE =====
+// ===== SPEAK FUNCTION =====
 function speakNext() {
 
   if (index >= lines.length) return;
 
   const line = lines[index];
 
-  // 👉 सिर्फ एक लाइन दिखेगी
-  textBox.innerText = line;
+  // 🔥 TEXT SHOW FIX
+  textBox.textContent = line;
 
-  // 👉 image effect
-  img.style.transform = "scale(1)";
-  setTimeout(() => {
-    img.style.transition = "transform 5s linear";
-    img.style.transform = "scale(1.08)";
-  }, 50);
+  // 🔥 IMAGE EFFECT FIX
+  resetEffect();
+  setTimeout(applyEffect, 50);
 
   speechSynthesis.cancel();
 
   const speech = new SpeechSynthesisUtterance(line);
 
-  // 🎤 Hindi voice
-  const voices = speechSynthesis.getVoices();
-  const v = voices.find(v => v.lang.includes("hi")) || voices[0];
-  if (v) speech.voice = v;
+  // 🔥 VOICE FIX (async load safe)
+  let voices = speechSynthesis.getVoices();
+  if (!voices.length) {
+    speechSynthesis.onvoiceschanged = () => {
+      voices = speechSynthesis.getVoices();
+      setVoiceAndSpeak();
+    };
+  } else {
+    setVoiceAndSpeak();
+  }
 
-  speech.lang = "hi-IN";
-  speech.rate = 0.95;
-  speech.pitch = 1.1;
+  function setVoiceAndSpeak() {
+    const v = voices.find(v => v.lang.includes("hi")) || voices[0];
+    if (v) speech.voice = v;
 
-  speech.onend = () => {
-    index++;
-    setTimeout(speakNext, 700);
-  };
+    speech.lang = "hi-IN";
+    speech.rate = 0.95;
+    speech.pitch = 1.1;
 
-  speechSynthesis.speak(speech);
+    speech.onend = () => {
+      index++;
+      setTimeout(speakNext, 700);
+    };
+
+    speechSynthesis.speak(speech);
+  }
 }
