@@ -1,9 +1,9 @@
 const fileInput = document.getElementById("fileInput");
 const textInput = document.getElementById("textInput");
-
 const img = document.getElementById("img");
 const textBox = document.getElementById("textBox");
 const playBtn = document.getElementById("playBtn");
+const container = document.querySelector(".container");
 
 // ===== IMAGE LOAD =====
 fileInput.addEventListener("change", function () {
@@ -15,37 +15,82 @@ fileInput.addEventListener("change", function () {
   img.style.display = "block";
 });
 
-// ===== MULTI COLOR TEXT =====
-textInput.addEventListener("input", function () {
-  const text = textInput.value;
+// ===== MULTILINE TEXT =====
+let lines = [];
+let currentLine = 0;
 
-  // हर शब्द को अलग रंग देना
-  const colors = ["#ff4d4d", "#ffd633", "#66ff66", "#66ccff", "#ff66cc"];
-  const words = text.split(" ");
-
-  const coloredText = words.map((word, i) => {
-    const color = colors[i % colors.length];
-    return `<span style="color:${color}">${word}</span>`;
-  }).join(" ");
-
-  textBox.innerHTML = coloredText;
-});
-
-// ===== TTS PLAY =====
+// ===== PLAY BUTTON =====
 playBtn.addEventListener("click", function () {
 
-  const text = textInput.value;
+  const text = textInput.value.trim();
   if (!text) {
     alert("पहले लेख लिखें");
     return;
   }
 
+  // 🔥 Hide input UI
+  fileInput.style.display = "none";
+  textInput.style.display = "none";
+  playBtn.style.display = "none";
+
+  // 🔥 Fullscreen
+  document.documentElement.requestFullscreen?.();
+
+  // Split text into lines (by punctuation)
+  lines = text.split(/[।.!?]/).filter(l => l.trim() !== "");
+  currentLine = 0;
+
+  speakLine();
+});
+
+// ===== SPEAK LINE BY LINE =====
+function speakLine() {
+
+  if (currentLine >= lines.length) return;
+
+  const line = lines[currentLine].trim();
+
+  // show only one line
+  textBox.innerText = line;
+
+  // animate image
+  applyImageEffect();
+
   speechSynthesis.cancel();
 
-  const speech = new SpeechSynthesisUtterance(text);
+  const speech = new SpeechSynthesisUtterance(line);
+
+  // 🎤 BEST FEMALE VOICE DETECTION
+  const voices = speechSynthesis.getVoices();
+  const femaleVoice = voices.find(v =>
+    v.lang.includes("hi") && v.name.toLowerCase().includes("female")
+  ) || voices.find(v => v.lang.includes("hi"));
+
+  if (femaleVoice) speech.voice = femaleVoice;
+
   speech.lang = "hi-IN";
-  speech.rate = 0.9;
+  speech.rate = 0.95;
+  speech.pitch = 1.1;
+
+  speech.onend = () => {
+    currentLine++;
+    setTimeout(speakLine, 600);
+  };
 
   speechSynthesis.speak(speech);
+}
 
-});
+// ===== IMAGE EFFECT =====
+function applyImageEffect() {
+
+  const effects = [
+    "scale(1.05)",
+    "scale(1.1)",
+    "scale(1.08)"
+  ];
+
+  const random = effects[Math.floor(Math.random() * effects.length)];
+
+  img.style.transition = "transform 5s ease";
+  img.style.transform = random;
+}
