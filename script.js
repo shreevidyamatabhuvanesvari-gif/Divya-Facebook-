@@ -1,4 +1,3 @@
-// ===== Slide Data =====
 const slides = [
   {
     image: "images/img1.jpg",
@@ -6,11 +5,11 @@ const slides = [
   },
   {
     image: "images/img2.jpg",
-    text: "सत्य, सरलता और संवेदना ही स्थायी प्रभाव का आधार हैं।"
+    text: "सत्य और सरलता ही स्थायी प्रभाव की नींव हैं।"
   },
   {
     image: "images/img3.jpg",
-    text: "विचार वही मूल्यवान है, जो जीवन को दिशा दे और समाज को जोड़ सके।"
+    text: "प्रेरणा वही जो जीवन में सकारात्मक परिवर्तन लाए।"
   }
 ];
 
@@ -20,22 +19,21 @@ let voices = [];
 
 const slideDiv = document.getElementById("slide");
 const textBox = document.getElementById("textBox");
+const startBtn = document.getElementById("startBtn");
 
-// ===== Load Voices =====
+// ===== Voices Load =====
 function loadVoices() {
   voices = speechSynthesis.getVoices();
 }
-
-// कुछ browsers में voices async आते हैं
 speechSynthesis.onvoiceschanged = loadVoices;
 
-// ===== Select Female Hindi Voice =====
-function getHindiFemaleVoice() {
-  return voices.find(v =>
-    v.lang.includes("hi") && v.name.toLowerCase().includes("female")
-  ) || voices.find(v =>
-    v.lang.includes("hi")
-  ) || null;
+// ===== Best Hindi Voice =====
+function getHindiVoice() {
+  let voice = voices.find(v => v.lang === "hi-IN");
+  if (!voice) {
+    voice = voices.find(v => v.lang.includes("hi"));
+  }
+  return voice || null;
 }
 
 // ===== Speak Function =====
@@ -44,10 +42,8 @@ function speakText(text) {
 
   const utterance = new SpeechSynthesisUtterance(text);
 
-  const voice = getHindiFemaleVoice();
-  if (voice) {
-    utterance.voice = voice;
-  }
+  const voice = getHindiVoice();
+  if (voice) utterance.voice = voice;
 
   utterance.lang = "hi-IN";
   utterance.rate = 0.9;
@@ -91,6 +87,12 @@ function nextSlide() {
   }, 500);
 }
 
+// ===== Start Button =====
+startBtn.addEventListener("click", () => {
+  startBtn.style.display = "none";
+  loadSlide(currentIndex);
+});
+
 // ===== Prevent Interaction While Speaking =====
 document.addEventListener("touchstart", (e) => {
   if (isSpeaking) {
@@ -101,5 +103,4 @@ document.addEventListener("touchstart", (e) => {
 // ===== Init =====
 window.onload = () => {
   loadVoices();
-  loadSlide(currentIndex);
 };
