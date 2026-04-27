@@ -47,18 +47,42 @@
       line-height: 1.5;
       text-align: center;
     }
+
+    .start-btn {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      padding: 12px 20px;
+      font-size: 16px;
+      background: #ffffff;
+      color: #000;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      z-index: 10;
+    }
   </style>
 </head>
 
 <body>
 
   <div class="reel-container">
-    <div class="slide" id="slide">
+    <div class="slide" id="slide"
+      style="background-image: url('images/img1.jpg');">
+      
       <div class="text-box" id="textBox">
-        आपका लेख यहाँ दिखाई देगा...
+        प्रारंभ करने के लिए बटन दबाएँ
       </div>
+
+      <button class="start-btn" id="startBtn">
+        ▶ शुरू करें
+      </button>
+
     </div>
   </div>
+
+  <!-- Script जोड़ना बहुत जरूरी -->
   <script src="script.js"></script>
 
 </body>
