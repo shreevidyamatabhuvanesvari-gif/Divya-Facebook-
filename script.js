@@ -1,26 +1,46 @@
-function generate() {
-  const file = document.getElementById("imageInput").files[0];
-  const text = document.getElementById("textInput").value;
+const imageInput = document.getElementById("imageInput");
+const textInput = document.getElementById("textInput");
+const previewBtn = document.getElementById("previewBtn");
+const previewImage = document.getElementById("previewImage");
+const previewText = document.getElementById("previewText");
+
+previewBtn.addEventListener("click", function () {
+
+  const file = imageInput.files[0];
+  const text = textInput.value.trim();
 
   if (!file) {
     alert("कृपया फोटो चुनें");
     return;
   }
 
+  if (!text) {
+    alert("कृपया लेख लिखें");
+    return;
+  }
+
+  // ===== Image Load =====
   const reader = new FileReader();
 
-  reader.onload = function(e) {
-    document.getElementById("previewImage").src = e.target.result;
-  }
+  reader.onload = function (e) {
+    previewImage.src = e.target.result;
+    previewImage.style.display = "block";
+  };
+
+  reader.onerror = function () {
+    alert("फोटो लोड करने में समस्या हुई");
+  };
 
   reader.readAsDataURL(file);
 
-  document.getElementById("previewText").innerText = text;
+  // ===== Text Set =====
+  previewText.innerText = text;
 
-  speak(text);
-}
+  // ===== Speak =====
+  speakText(text);
+});
 
-function speak(text) {
+function speakText(text) {
   speechSynthesis.cancel();
 
   const speech = new SpeechSynthesisUtterance(text);
