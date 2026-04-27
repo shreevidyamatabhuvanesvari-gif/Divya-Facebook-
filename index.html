@@ -30,6 +30,7 @@ body {
   width:100%;
   height:100%;
   object-fit:cover;
+  display:none; /* 🔥 important */
 }
 
 .text-box {
@@ -42,7 +43,7 @@ body {
   text-align:center;
 }
 
-input, textarea, button {
+input, textarea {
   width:100%;
   margin:8px 0;
   padding:10px;
@@ -57,10 +58,9 @@ input, textarea, button {
 
 <input type="file" id="fileInput" accept="image/*">
 <textarea id="textInput" placeholder="यहाँ लेख लिखें"></textarea>
-<button id="btn">Preview बनाएं</button>
 
 <div class="preview">
-  <img id="img" src="">
+  <img id="img">
   <div class="text-box" id="textBox"></div>
 </div>
 
