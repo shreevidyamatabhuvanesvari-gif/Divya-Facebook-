@@ -24,26 +24,24 @@ function splitLines(text) {
 
 // ===== FULLSCREEN =====
 function openFullscreen() {
-  const el = document.querySelector(".preview"); // 🔥 important
+  const el = document.querySelector(".preview");
 
   if (el.requestFullscreen) el.requestFullscreen();
   else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
   else if (el.msRequestFullscreen) el.msRequestFullscreen();
 }
 
-// ===== IMAGE EFFECT =====
-function applyEffect() {
-  img.style.transition = "transform 6s linear";
-  img.style.transform = "scale(1.08)";
-}
+// ===== COLORS =====
+const colors = [
+  "#ff4d4d",
+  "#ffd633",
+  "#66ff66",
+  "#66ccff",
+  "#ff66cc",
+  "#ffffff"
+];
 
-// ===== RESET EFFECT =====
-function resetEffect() {
-  img.style.transition = "none";
-  img.style.transform = "scale(1)";
-}
-
-// ===== MAIN FLOW =====
+// ===== MAIN =====
 let lines = [];
 let index = 0;
 
@@ -68,48 +66,39 @@ playBtn.addEventListener("click", function () {
   speakNext();
 });
 
-// ===== SPEAK FUNCTION =====
+// ===== SPEAK =====
 function speakNext() {
 
   if (index >= lines.length) return;
 
   const line = lines[index];
 
-  // 🔥 TEXT SHOW FIX
-  textBox.textContent = line;
+  // 🎨 MULTICOLOR TEXT (FIXED)
+  const words = line.split(" ");
 
-  // 🔥 IMAGE EFFECT FIX
-  resetEffect();
-  setTimeout(applyEffect, 50);
+  const colored = words.map((w, i) => {
+    const color = colors[i % colors.length];
+    return `<span style="color:${color}">${w}</span>`;
+  }).join(" ");
+
+  textBox.innerHTML = colored;
 
   speechSynthesis.cancel();
 
   const speech = new SpeechSynthesisUtterance(line);
 
-  // 🔥 VOICE FIX (async load safe)
   let voices = speechSynthesis.getVoices();
-  if (!voices.length) {
-    speechSynthesis.onvoiceschanged = () => {
-      voices = speechSynthesis.getVoices();
-      setVoiceAndSpeak();
-    };
-  } else {
-    setVoiceAndSpeak();
-  }
+  const v = voices.find(v => v.lang.includes("hi")) || voices[0];
+  if (v) speech.voice = v;
 
-  function setVoiceAndSpeak() {
-    const v = voices.find(v => v.lang.includes("hi")) || voices[0];
-    if (v) speech.voice = v;
+  speech.lang = "hi-IN";
+  speech.rate = 0.95;
+  speech.pitch = 1.1;
 
-    speech.lang = "hi-IN";
-    speech.rate = 0.95;
-    speech.pitch = 1.1;
+  speech.onend = () => {
+    index++;
+    setTimeout(speakNext, 600);
+  };
 
-    speech.onend = () => {
-      index++;
-      setTimeout(speakNext, 700);
-    };
-
-    speechSynthesis.speak(speech);
-  }
+  speechSynthesis.speak(speech);
 }
